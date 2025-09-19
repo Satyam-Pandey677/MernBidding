@@ -13,9 +13,14 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/Satyam-Pandey677/MernBidding/issues"
   },
-  "homepage": "https://github.com/Satyam-Pandey677/MernBidding#readme"
+  "homepage": "https://github.com/Satyam-Pandey677/MernBidding#readme",
+  "dependencies": {
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.18.1"
+  }
 }
