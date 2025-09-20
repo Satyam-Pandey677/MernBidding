@@ -5,10 +5,12 @@ export const authenticate = async (req, res, next) => {
     let token 
      token = req.cookies.jwt
 
+
      if(token){
         try {
             const decoded = jwt.verify(token, process.env.JWT_SECRATE)
-            req.user = await User.findOne(decoded.userId).select("-password")
+            req.user = await User.findOne(decoded._Id).select("-password")
+
             next()
             
         } catch (error) {

@@ -49,7 +49,6 @@ const login = async (req,res) => {
     const existeduser  = await User.findOne({
         $or:[{username}, {email}]
     })
-    console.log(existeduser)
 
     if(existeduser){
         const isPasswordMatched = await bcrypt.compare(password, existeduser.password)
@@ -82,8 +81,21 @@ const logout = async (req, res) =>{
     })
 }
 
+const getCurrentuser = async (req, res) => {
+    try {
+        res.status(200)
+        .json({
+            "message":"successfully get Current user",
+            "user": req.user
+        })
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+
 export {
     register,
     login,
-    logout
+    logout,
+    getCurrentuser
 }
