@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { User } from "../models/userModel.js";
-import bcript from "bcrypt"
-import createToken from "../utils/createToken.js"
+import bcrypt from "bcrypt"
+import genrateToken from "../utils/createToken.js"
 
 const register =async  (req, res) => {
     try {
@@ -20,8 +20,8 @@ const register =async  (req, res) => {
             throw new Error ("User Already Registered");
         }
 
-        const salt = await bcript.genSalt(10)
-        const hashedPass = await bcript.hash(password, salt);
+        const salt = await bcrypt.genSalt(10)
+        const hashedPass = await bcrypt.hash(password, salt);
         const newUser  = await User.create({
             username,
             email,
@@ -40,34 +40,50 @@ const register =async  (req, res) => {
     }
 }
 
-const login  =async (req,res) => {
+const login = async (req,res) => {
     const {username , email, password} = req.body;
-    if(!username || !email ||!password){
+    if(!username && !email ||!password){
         throw new Error ("All field are required")
     }
 
     const existeduser  = await User.findOne({
         $or:[{username}, {email}]
     })
+    console.log(existeduser)
 
     if(existeduser){
-        const isPasswordMatched = await bcript.compare(password, existeduser.password)
+        const isPasswordMatched = await bcrypt.compare(password, existeduser.password)
 
         if(isPasswordMatched){
-            createToken(res, existeduser._id)
+            genrateToken(res, existeduser._id)
         }
 
         res.status(200)
-        .json(existeduser);
+        .json({
+            "user": existeduser,
+            "message":"User Successfully login"
+        });
 
+    }else{
+        throw new Error("Not user found");
     }
+}
 
-    if(existeduser){
+const logout = async (req, res) =>{
+    res.cookie("jwt", " ", {
+        httpOnly:true,
+        expires:new Date(0)
+    })
 
-    }
+    res.status(200)
+    .json({
+        "message":"User Logout Successfully",
+        "user ":req.user
+    })
 }
 
 export {
     register,
-    login
+    login,
+    logout
 }
