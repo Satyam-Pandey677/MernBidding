@@ -93,9 +93,53 @@ const getCurrentuser = async (req, res) => {
     }
 }
 
+const updateUser = async (req, res) => {
+    try {
+        const {username, phoneNo} = req.body
+    
+        if(!username && !phoneNo){
+            throw new Error("fields are required")
+        }
+    
+        const updateUser = await User.findByIdAndUpdate(req.user._id, {
+            username,
+            phoneNo
+        }) 
+    
+        if(!updateUser){
+            throw new Error("Somthing went off")
+        }
+        return res.status(200)
+        .json({
+            updateUser,
+            "message": "Profile updated successfully",
+        })
+
+    } catch (error) {
+        res.status(500).json({"error":"Somthing Went Off"})
+    }
+}
+
+const getUserbyId = async (req,res) => {
+    try {
+        const {id} = req.params;
+        
+    } catch (error) {
+        res.status(500)
+        .json({
+            "message": "Somthing Went off",
+            "error": error.message
+        })
+    }
+}
+ 
+
+
+
 export {
     register,
     login,
     logout,
-    getCurrentuser
+    getCurrentuser,
+    updateUser
 }
