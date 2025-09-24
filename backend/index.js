@@ -15,9 +15,12 @@ import { DbConnect } from "./config/db.js";
 DbConnect()
 
 import userRoute from "./routes/userRoute.js"
+import productRoute from "./routes/productRouter.js"
+import { authAsSeller, authenticate } from "./middleware/authMiddleware.js";
 
 
 app.use("/api/user", userRoute);
+app.use("/api/product",authenticate,authAsSeller,productRoute)
 
 app.listen(4000, () => {
     console.log("server running at port ", port)

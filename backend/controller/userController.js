@@ -6,7 +6,6 @@ import genrateToken from "../utils/createToken.js"
 const register =async  (req, res) => {
     try {
         const {username, email, password,  role} = req.body;
-        console.log(password)
 
         if(!username || !email || !password || !role){
             throw new Error("All details required");
@@ -46,9 +45,13 @@ const login = async (req,res) => {
         throw new Error ("All field are required")
     }
 
-    const existeduser  = await User.findOne({
-        $or:[{username}, {email}]
-    })
+    // const existeduser  = await User.findOne({
+    //     $or:[{username}, {email}]
+    // })
+
+    const query = email? {email} : {username};
+    const existeduser = await User.findOne(query)
+
 
     if(existeduser){
         const isPasswordMatched = await bcrypt.compare(password, existeduser.password)
@@ -123,6 +126,21 @@ const updateUser = async (req, res) => {
 const getUserbyId = async (req,res) => {
     try {
         const {id} = req.params;
+
+        if(!id){
+            throw new Error("User not found")
+        }
+
+        const user = await User.findById(id).select("-password")
+        if(!user){
+            throw new Error("User not found")
+        }
+
+        return res.status(200)
+        .json({
+            "message":"user fetched successfully",
+            "data":user
+        })
         
     } catch (error) {
         res.status(500)
@@ -132,14 +150,12 @@ const getUserbyId = async (req,res) => {
         })
     }
 }
- 
-
-
 
 export {
     register,
     login,
     logout,
     getCurrentuser,
-    updateUser
+    updateUser,
+    getUserbyId
 }
