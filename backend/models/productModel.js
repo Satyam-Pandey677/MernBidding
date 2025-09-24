@@ -16,10 +16,6 @@ const productSchema = new mongoose.Schema({
     description:{
         type:String,
     },
-    ogPrice:{
-        type:Number,
-        required:true,
-    },
     bidPrice:{
         type:Number
     },

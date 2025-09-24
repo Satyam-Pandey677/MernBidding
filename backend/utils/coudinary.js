@@ -7,12 +7,13 @@ cloudinary.config({
     api_secret:process.env.CLOUDINARY_SECRET
 })
 
-const uploadImage = async (imagePath) => {
+export const uploadImage = async (imagePath) => {
     try {
-        const upload  = await cloudinary.uploader.upload(image, {
+        const upload  = await cloudinary.uploader.upload(imagePath, {
             resource_type:"auto"
         })
         console.log("file upload successfully")
+        return upload
         fs.unlinkSync(imagePath) 
     } catch (error) {
         fs.unlinkSync(imagePath)
