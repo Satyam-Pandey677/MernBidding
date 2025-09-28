@@ -1,5 +1,8 @@
+import { io } from "../index.js";
 import { Product } from "../models/productModel.js";
 import {uploadImage} from "../utils/coudinary.js"
+
+import {Server} from "socket.io"
 
 const createProduct = async (req, res) =>{
     const {name, discription,  pickUp, drop} = req.body;
@@ -77,8 +80,54 @@ const getProductById = async (req, res) => {
     }
 }
 
+const startAuction = async (req, res) => {
+    const {id} = req.params
+
+    const product = await Product.findById(id)
+    if (!product) return res.status(404).json({ message: "Product not found" });
+
+    product.status = "open"
+    await product.save()
+
+    io.to("id").emit("actionStarted", {id})
+
+    res.status(200).json({ message: "Auction started", product });
+    
+}
+
+const bidStart = async(req, res) => {
+    const {id} = req.params;
+    const {amount} = req.body;
+
+    if(!id) throw new Error("product id required");
+    if(!amount) throw new Error("Aount is required");
+
+    const product = await Product.findById(id);
+
+    if(!product.status == "open") {
+        res.send("Bidding no start at");
+    }
+
+    product.bidders.push({"transporter":req.user._id, });
+
+    if(product.bidPrice >0 && amount >= product.bidPrice){
+        res.status(400).status({"message": "your Bid is Higher then current bid"})
+    }
+
+    product.bidders.push({"transporter": req.user._id})
+
+    product.bidPrice = amount;
+    await product.save()
+
+    io.to(id).emit("bidUpdate",product)
+
+    res.status(200).json({"message": "bid placed", product})
+}
+
 export {
     createProduct,
     getProductById,
-    getAllProducts
+    getAllProducts,
+    bidStart,
+    startAuction
 }

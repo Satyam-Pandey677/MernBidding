@@ -17,7 +17,8 @@ const productSchema = new mongoose.Schema({
         type:String,
     },
     bidPrice:{
-        type:Number
+        type:Number,
+        default : 0
     },
 
     pickUp:{
